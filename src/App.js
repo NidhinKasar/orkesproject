@@ -1,6 +1,7 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import {getData} from './services'
+import { getData } from './services';
+import Header from "./components/header";
 
 function App() {
 
@@ -9,13 +10,23 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    getPageData(1)
+    getPageData(page)
   }, [])
+  
+  useEffect(() => {
+    
+    if (page > 1) {
+      getPageData(page)
+    }
+  console.log(page)
+   
+  }, [page])
   
 
   const getPageData = (pagenum) => {
     setIsLoading(true);
     getData(pagenum).then((resp) => {
+      if(resp && resp.length > 0)
       setPageData(prevData => [...prevData, ...resp]);
     })
     setIsLoading(false);
@@ -24,7 +35,7 @@ function App() {
   useEffect(() => {
     function handleScroll() {
       if (isScrollEnd().end) {
-        getPageData(page + 1)
+      //  getPageData(page + 1)
         setPage((prev) => prev + 1)
       }
       else if (isScrollEnd().start) {
@@ -39,7 +50,7 @@ function App() {
       const distanceToEnd = documentHeight - (scrollPosition + windowHeight);
 
       
-      const threshold = 100;
+      const threshold = 10;
       return {end: distanceToEnd <= threshold, start: scrollPosition === 0};
     }
 
@@ -50,6 +61,8 @@ function App() {
   
   return(
     <>
+       <Header/>
+
       {pageData && pageData.length > 0 && pageData.map((item, key) => {
         return (
           <div className="card">
